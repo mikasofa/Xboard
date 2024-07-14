@@ -3,7 +3,7 @@ namespace App\Services;
 
 
 use App\Exceptions\ApiException;
-use App\Jobs\SendEmailJob;
+use App\Services\MailService;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
@@ -74,7 +74,7 @@ class TicketService {
         $cacheKey = 'ticket_sendEmailNotify_' . $ticket->user_id;
         if (!Cache::get($cacheKey)) {
             Cache::put($cacheKey, 1, 1800);
-            SendEmailJob::dispatch([
+            MailService::sendEmail([
                 'email' => $user->email,
                 'subject' => '您在' . admin_setting('app_name', 'XBoard') . '的工单得到了回复',
                 'template_name' => 'notify',

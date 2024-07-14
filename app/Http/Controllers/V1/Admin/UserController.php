@@ -8,10 +8,10 @@ use App\Http\Requests\Admin\UserFetch;
 use App\Http\Requests\Admin\UserGenerate;
 use App\Http\Requests\Admin\UserSendMail;
 use App\Http\Requests\Admin\UserUpdate;
-use App\Jobs\SendEmailJob;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\MailService;
 use App\Utils\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -254,7 +254,7 @@ class UserController extends Controller
         $this->filter($request, $builder);
         $users = $builder->get();
         foreach ($users as $user) {
-            SendEmailJob::dispatch([
+            MailService::sendEmail([
                 'email' => $user->email,
                 'subject' => $request->input('subject'),
                 'template_name' => 'notify',
@@ -263,8 +263,8 @@ class UserController extends Controller
                     'url' => admin_setting('app_url'),
                     'content' => $request->input('content')
                 ]
-            ],
-            'send_email_mass');
+            ]);
+            //'send_email_mass');
         }
 
         return $this->success(true);

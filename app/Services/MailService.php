@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Jobs\SendEmailJob;
 use App\Models\User;
 use App\Utils\CacheKey;
 use Illuminate\Support\Facades\Cache;
@@ -20,7 +19,7 @@ class MailService
             return;
         if (!Cache::put($flag, 1, 24 * 3600))
             return;
-        SendEmailJob::dispatch([
+        \App\Services\MailService::sendEmail([
             'email' => $user->email,
             'subject' => __('The traffic usage in :app_name has reached 80%', [
                 'app_name' => admin_setting('app_name', 'XBoard')
@@ -37,7 +36,7 @@ class MailService
     {
         if (!($user->expired_at !== NULL && ($user->expired_at - 86400) < time() && $user->expired_at > time()))
             return;
-        SendEmailJob::dispatch([
+        \App\Services\MailService::sendEmail([
             'email' => $user->email,
             'subject' => __('The service in :app_name is about to expire', [
                 'app_name' => admin_setting('app_name', 'XBoard')

@@ -6,7 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSendMail;
 use App\Http\Requests\Staff\UserUpdate;
-use App\Jobs\SendEmailJob;
+use App\Services\MailService;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,7 +67,7 @@ class UserController extends Controller
         $this->filter($request, $builder);
         $users = $builder->get();
         foreach ($users as $user) {
-            SendEmailJob::dispatch([
+            MailService::sendEmail([
                 'email' => $user->email,
                 'subject' => $request->input('subject'),
                 'template_name' => 'notify',

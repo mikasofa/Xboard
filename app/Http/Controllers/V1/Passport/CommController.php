@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1\Passport;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Passport\CommSendEmailVerify;
-use App\Jobs\SendEmailJob;
+use App\Services\MailService;
 use App\Models\InviteCode;
 use App\Utils\CacheKey;
 use App\Utils\Dict;
@@ -36,7 +36,7 @@ class CommController extends Controller
         $code = rand(100000, 999999);
         $subject = admin_setting('app_name', 'XBoard') . __('Email verification code');
 
-        SendEmailJob::dispatch([
+        MailService::sendEmail([
             'email' => $email,
             'subject' => $subject,
             'template_name' => 'verify',

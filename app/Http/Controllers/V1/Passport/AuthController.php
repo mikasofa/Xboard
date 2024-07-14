@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Passport\AuthForget;
 use App\Http\Requests\Passport\AuthLogin;
 use App\Http\Requests\Passport\AuthRegister;
-use App\Jobs\SendEmailJob;
+use App\Services\MailService;
 use App\Models\InviteCode;
 use App\Models\Plan;
 use App\Models\User;
@@ -53,7 +53,7 @@ class AuthController extends Controller
             $link = url($redirect);
         }
 
-        SendEmailJob::dispatch([
+        MailService::sendEmail([
             'email' => $user->email,
             'subject' => __('Login to :name', [
                 'name' => admin_setting('app_name', 'XBoard')
@@ -128,7 +128,7 @@ class AuthController extends Controller
         $user->password = password_hash($password, PASSWORD_DEFAULT);
         $user->uuid = Helper::guid(true);
         $user->token = Helper::guid();
-        // TODO 增加过期默认值、流量告急提醒默认值 
+        // TODO 增加过期默认值、流量告急提醒默认值
         $user->remind_expire = admin_setting('default_remind_expire',1);
         $user->remind_traffic = admin_setting('default_remind_traffic',1);
         if ($request->input('invite_code')) {
